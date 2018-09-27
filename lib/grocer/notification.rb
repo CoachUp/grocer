@@ -112,7 +112,7 @@ module Grocer
       aps_hash[:'mutable-content'] = mutable_content if mutable_content?
       aps_hash[:category] = category if category
 
-      { aps: aps_hash }.merge(custom || { })
+      { aps: aps_hash }.deep_merge(custom || { })
     end
 
     def payload_too_large?
