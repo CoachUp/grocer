@@ -8,7 +8,7 @@ module Grocer
     MUTABLE_CONTENT_INDICATOR = 1
 
     attr_accessor :identifier, :expiry, :device_token
-    attr_reader :alert, :badge, :custom, :sound, :content_available, :mutable_content, :category
+    attr_reader :alert, :badge, :custom, :sound, :content_available, :mutable_content, :category, :thread_id
 
     # Public: Initialize a new Grocer::Notification. You must specify at least an `alert` or `badge`.
     #
@@ -22,6 +22,7 @@ module Grocer
     #           :content_available - The truthy or falsy value indicating the availability of new content for background fetch. (optional)
     #           :mutable_content   - The truthy or falsy value indicating whether to have this notification be processed by a Notification Service Extension (since iOS 10) (optional)
     #           :category          - The String to be sent as the category portion of the payload. (optional)
+    #           :thread_id         - The thread-id for the payload. (optional)
     def initialize(payload = {})
       @identifier = 0
 
@@ -83,8 +84,17 @@ module Grocer
       @encoded_payload = nil
     end
 
+    def thread_id=(thread_id)
+      @thread_id = thread_id
+      @encoded_payload = nil
+    end
+
     def mutable_content?
       !!mutable_content
+    end
+
+    def thread_id?
+      !!thread_id
     end
 
     def validate_payload
@@ -111,6 +121,7 @@ module Grocer
       aps_hash[:'content-available'] = content_available if content_available?
       aps_hash[:'mutable-content'] = mutable_content if mutable_content?
       aps_hash[:category] = category if category
+      aps_hash[:'thread-id'] = thread_id if thread_id?
 
       { aps: aps_hash }.deep_merge(custom || { })
     end
